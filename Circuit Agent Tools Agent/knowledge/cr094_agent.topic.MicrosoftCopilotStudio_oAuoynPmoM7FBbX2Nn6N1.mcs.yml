@@ -1,0 +1,6 @@
+# Name: Microsoft Copilot Studio
+# The official Microsoft landing site for Copilot across organizations and personal use, providing an overview of Copilot capabilities, product options, licensing, privacy and security commitments, and common usage scenarios. It helps users understand what Copilots are, how different Copilot offerings compare, how Copilot integrates with Microsoft 365 apps (Word, Excel, PowerPoint, Teams), and where to find documentation, tutorials, and next steps. Designed as a discovery and onboarding resource rather than an implementation guide.
+kind: KnowledgeSourceConfiguration
+source:
+  kind: PublicSiteSearchSource
+  site: https://www.microsoft.com/en-us/microsoft-copilot

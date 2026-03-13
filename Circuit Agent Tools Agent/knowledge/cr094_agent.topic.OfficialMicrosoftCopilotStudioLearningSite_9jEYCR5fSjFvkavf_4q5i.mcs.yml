@@ -1,0 +1,6 @@
+# Name: Official Microsoft Copilot Studio Learning Site
+# Microsoft Copilot Studio documentation is an authoritative, end‑to‑end reference for building, extending, testing, and deploying AI agents and workflows in Copilot Studio. It provides structured guidance across core tasks (agent creation, topics, variables, prompts, tools/connectors, and knowledge sources like public websites/SharePoint/files), plus troubleshooting, release updates, training resources, and operational best practices (administration, analytics, publishing to channels such as Teams and websites). Use this site as the primary source of truth for Copilot Studio capabilities, recommended patterns, and current product guidance.
+kind: KnowledgeSourceConfiguration
+source:
+  kind: PublicSiteSearchSource
+  site: https://learn.microsoft.com/en-us/microsoft-copilot-studio/

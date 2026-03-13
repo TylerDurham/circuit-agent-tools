@@ -1,0 +1,20 @@
+# Name: Get Weather
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  id: main
+  intent:
+    triggerQueries:
+      - get weather
+      - what's the weather
+      - weather forecast
+      - is it raining today
+      - current temperature
+      - will it snow tomorrow
+      - show me the weather update
+      - how's the weather outside
+      - do I need an umbrella today
+      - weather conditions now
+
+inputType: {}
+outputType: {}

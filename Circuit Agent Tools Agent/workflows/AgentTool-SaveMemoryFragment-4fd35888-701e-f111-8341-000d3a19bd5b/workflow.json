@@ -1,0 +1,231 @@
+﻿{
+  "properties": {
+    "connectionReferences": {
+      "shared_onedriveforbusiness": {
+        "api": {
+          "name": "shared_onedriveforbusiness"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
+        },
+        "runtimeSource": "invoker"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        },
+        "Memory Fragment Path (circuit_MemoryFragmentPath)": {
+          "defaultValue": "/Agent Tools/Memories",
+          "type": "String",
+          "metadata": {
+            "schemaName": "circuit_MemoryFragmentPath",
+            "description": "The root path to save memory fragment files."
+          }
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "The path to where the memory file should be saved. ",
+                  "title": "Path",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_1": {
+                  "description": "The name of the file. If no extension is provided, the extension \u0022.md\u0022 will be appended.",
+                  "title": "FileName",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_2": {
+                  "description": "Content: The content to save, usually the output of an agent conversation.",
+                  "title": "Contents",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "b8f61c18-7224-4f8a-9c5f-72fbce5df764"
+          }
+        }
+      },
+      "actions": {
+        "Respond_to_the_agent": {
+          "type": "Response",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "title": "URL",
+                  "description": "The URL to the memory file in the user\u0027s OneDrive for Business.",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "path": {
+                  "title": "Path",
+                  "description": "The path to the file in the user\u0027s OneDrive for Business.",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "url": "@{outputs(\u0027Create_Share_Link_to_Memory_File_Fragment\u0027)?[\u0027body/WebUrl\u0027]}",
+              "path": "@{outputs(\u0027Create_Memory_Fragment_File\u0027)?[\u0027body/Path\u0027]}"
+            }
+          },
+          "runAfter": {
+            "Create_Share_Link_to_Memory_File_Fragment": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
+          }
+        },
+        "Create_Memory_Fragment_File": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "folderPath": "@variables(\u0027memoryFragmentsPath\u0027)",
+              "name": "@variables(\u0027sanitizedFileName\u0027)",
+              "body": "@triggerBody()?[\u0027text_2\u0027]"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+              "operationId": "CreateFile",
+              "connectionName": "shared_onedriveforbusiness"
+            }
+          },
+          "runAfter": {
+            "Ensure_Extension_on_Memory_Fragment_File": [
+              "Succeeded"
+            ]
+          },
+          "runtimeConfiguration": {
+            "contentTransfer": {
+              "transferMode": "Chunked"
+            }
+          }
+        },
+        "Create_Share_Link_to_Memory_File_Fragment": {
+          "type": "OpenApiConnection",
+          "inputs": {
+            "parameters": {
+              "path": "@outputs(\u0027Create_Memory_Fragment_File\u0027)?[\u0027body/Path\u0027]",
+              "type": "View",
+              "scope": "Organization"
+            },
+            "host": {
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+              "operationId": "CreateShareLinkByPathV2",
+              "connectionName": "shared_onedriveforbusiness"
+            }
+          },
+          "runAfter": {
+            "Create_Memory_Fragment_File": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Ensure_Extension_on_Memory_Fragment_File": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sanitizedFileName",
+                "type": "string",
+                "value": "@\nif(\n  or(empty(triggerBody()?[\u0027text_1\u0027]), endsWith(triggerBody()?[\u0027text_1\u0027], \u0027/\u0027)),\n  triggerBody()?[\u0027text_1\u0027],\n  if(\n    contains(last(split(triggerBody()?[\u0027text_1\u0027], \u0027/\u0027)), \u0027.\u0027),\n    triggerBody()?[\u0027text_1\u0027],\n    concat(triggerBody()?[\u0027text_1\u0027], \u0027.md\u0027)\n  )\n)\n"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_Memory_Fragments_Path": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "Initialize_Memory_Root_Path": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "MEMORY_ROOT_PATH",
+                "type": "string",
+                "value": "@parameters(\u0027Memory Fragment Path (circuit_MemoryFragmentPath)\u0027)"
+              }
+            ]
+          },
+          "runAfter": {}
+        },
+        "Initialize_Memory_Fragments_Path": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "memoryFragmentsPath",
+                "type": "string",
+                "value": "@{variables(\u0027MEMORY_ROOT_PATH\u0027)}@{variables(\u0027sanitizedPath\u0027)}"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_and_Sanitize_Path_Param": [
+              "SUCCEEDED"
+            ]
+          }
+        },
+        "Initialize_and_Sanitize_Path_Param": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "sanitizedPath",
+                "type": "string",
+                "value": "@if(startsWith(\n  triggerBody()?[\u0027text\u0027], \u0027/\u0027), \n  triggerBody()?[\u0027text\u0027], \n  concat(\u0027/\u0027, triggerBody()?[\u0027text\u0027])\n)"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_Memory_Root_Path": [
+              "Succeeded"
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}
