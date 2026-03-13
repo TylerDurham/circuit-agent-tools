@@ -1,6 +1,6 @@
-﻿jsonFileName: workflows/AgentTool-RecallAllMemoryFragments-12965933-731e-f111-8341-000d3a19bd5b/workflow.json
+﻿jsonFileName: workflows/AgentTool|RecallAllMemoryFragments-12965933-731e-f111-8341-000d3a19bd5b/workflow.json
 workflowId: 12965933-731e-f111-8341-000d3a19bd5b
-name: Agent Tool - Recall All Memory Fragments
+name: Agent Tool | Recall All Memory Fragments
 type: 1
 description: >-
   This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business. 

@@ -4,6 +4,7 @@ response:
   activity:
   mode: Generated
 
+modelDisplayName: Agent Tool | Recall All Memory Fragments
 modelDescription: |-
   This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business. 
 

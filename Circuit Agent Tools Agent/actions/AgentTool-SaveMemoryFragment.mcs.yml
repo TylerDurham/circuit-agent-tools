@@ -4,6 +4,7 @@ response:
   activity:
   mode: Generated
 
+modelDisplayName: Agent Tool | Save Memory Fragment
 modelDescription: |-
   This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business. 
 

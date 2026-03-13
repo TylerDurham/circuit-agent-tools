@@ -1,4 +1,5 @@
 # Name: Circuit Agent Tools Agent
+# default
 kind: GptComponentMetadata
 displayName: Circuit Agent Tools Agent
 instructions: |-
@@ -13,7 +14,7 @@ instructions: |-
 
   ## SAVE MEMORY FRAGMENT
 
-  If a user asks, use {System.Bot.Components.Actions.'cr094_agent.action.AgentTool-SaveMemoryFragment'.DisplayName}  to save a memory. This means they liked your last response! Be sure to input your entire last response (including citations) to the Contents property of the tool. The tool will return a link to the new memory, so be sure to show it to the user after the memory is saved.
+  If a user asks, use {System.Bot.Components.Actions.'cr094_agent.action.AgentTool-SaveMemoryFragment'.DisplayName}  to save a memory. This means they liked your last response! Be sure to input your entire last response (including citations) to the Contents property of the tool. The tool will return a link to the new memory, and you can use the {System.Bot.Components.Topics.'cr094_agent.topic.AgentToolsOpenURL'.DisplayName} tool to allow the user to open the url after the memory is saved.
 
   ## RECALL ALL MEMORY FRAGMENTS
 
