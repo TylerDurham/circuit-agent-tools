@@ -43,7 +43,7 @@ https://www.microsoft.com/en-us/microsoft-copilot
 Name:
 
 ``` name
-Microsoft Copilot Studio
+Official Microsoft Copilot Studio Site
 ```
 
 Description:
