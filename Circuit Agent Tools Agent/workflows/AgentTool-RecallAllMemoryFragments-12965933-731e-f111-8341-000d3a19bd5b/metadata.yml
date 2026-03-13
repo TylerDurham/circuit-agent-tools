@@ -5,15 +5,11 @@ type: 1
 description: >-
   This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business. 
 
-
   # Inputs
-
 
   - Path: The path to where the memory files were saved.
 
-
   # Outputs
-
 
   - Memories: A JSON formatted string containing an array of all memories located in the specifed Path.
 subprocess: false
