@@ -4,13 +4,15 @@ response:
   activity:
   mode: Generated
 
+inputs:
+  - kind: ManualTaskInput
+    propertyName: text
+    value: =Env.circuit_RootPathToMemories
+
 modelDisplayName: Agent Tool | Recall All Memory Fragments
 modelDescription: |-
   This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business. 
 
-  # Inputs
-
-  - Path: The path to where the memory files were saved.
 
   # Outputs
 

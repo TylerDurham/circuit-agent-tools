@@ -1,0 +1,323 @@
+﻿{
+  "properties": {
+    "connectionReferences": {
+      "shared_onedriveforbusiness": {
+        "api": {
+          "name": "shared_onedriveforbusiness"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
+        },
+        "runtimeSource": "invoker"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "The name of the memory fragment. Will be used as the filename when saved.",
+                  "title": "Name",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_1": {
+                  "description": "The contents of the memory fragment, in Markdown (default) or JSON format.",
+                  "title": "Contents",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "text_2": {
+                  "description": "The system root path where the memory fragments will be saved.",
+                  "title": "Path",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text",
+                "text_1",
+                "text_2"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "641ac52a-27a0-4d1e-b4f1-595ca26c50d6"
+          }
+        }
+      },
+      "actions": {
+        "Respond_to_the_agent": {
+          "type": "Response",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "title": "URL",
+                  "x-ms-dynamically-added": true,
+                  "type": "string",
+                  "description": "The URL to the memory file in the user\u0027s OneDrive for Business."
+                },
+                "path": {
+                  "title": "Path",
+                  "x-ms-dynamically-added": true,
+                  "type": "string",
+                  "description": "The path to the file in the user\u0027s OneDrive for Business."
+                },
+                "status": {
+                  "title": "Status",
+                  "x-ms-dynamically-added": true,
+                  "type": "boolean",
+                  "description": "A boolean flag that indicates the operation completed successfully or not.."
+                },
+                "message": {
+                  "title": "Message",
+                  "x-ms-dynamically-added": true,
+                  "type": "string",
+                  "description": "A message that explains the results of the operation."
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "url": "@{variables(\u0027output\u0027)?[\u0027url\u0027]}",
+              "path": "@{variables(\u0027output\u0027)?[\u0027path\u0027]}",
+              "message": "@{variables(\u0027output\u0027)?[\u0027message\u0027]}"
+            }
+          },
+          "runAfter": {
+            "Catch": [
+              "Succeeded",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
+          }
+        },
+        "Initialize_memoryRootPath": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "memoryRootPath",
+                "type": "string",
+                "value": "@triggerBody()?[\u0027text_2\u0027]"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_fileName": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "43a8f445-a4ae-49af-9182-5374b87f7335"
+          }
+        },
+        "Try": {
+          "type": "Scope",
+          "actions": {
+            "Create_file": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "folderPath": "@variables(\u0027memoryRootPath\u0027)",
+                  "name": "@variables(\u0027fileName\u0027)",
+                  "body": "@triggerBody()?[\u0027text_1\u0027]"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+                  "operationId": "CreateFile",
+                  "connectionName": "shared_onedriveforbusiness"
+                }
+              },
+              "runtimeConfiguration": {
+                "contentTransfer": {
+                  "transferMode": "Chunked"
+                }
+              },
+              "metadata": {
+                "operationMetadataId": "da752d30-ce43-4711-9d30-86a2275a1825"
+              }
+            },
+            "Create_share_link_by_path": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "path": "@outputs(\u0027Create_file\u0027)?[\u0027body/Path\u0027]",
+                  "type": "View",
+                  "scope": "Organization"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+                  "operationId": "CreateShareLinkByPathV2",
+                  "connectionName": "shared_onedriveforbusiness"
+                }
+              },
+              "runAfter": {
+                "Create_file": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "79a95406-df2b-4017-8d2e-712599f2dd2d"
+              }
+            },
+            "Compose_output": {
+              "type": "Compose",
+              "inputs": {
+                "url": "@{outputs(\u0027Create_share_link_by_path\u0027)?[\u0027body/WebUrl\u0027]}",
+                "path": "@{outputs(\u0027Create_file\u0027)?[\u0027body/Path\u0027]}",
+                "status": "success",
+                "message": "The memory fragment \u0027@{outputs(\u0027Create_file\u0027)?[\u0027body/DisplayName\u0027]}\u0027 has been successfully created at \u0027@{outputs(\u0027Create_file\u0027)?[\u0027body/Path\u0027]}\u0027. Enjoy!"
+              },
+              "runAfter": {
+                "Create_share_link_by_path": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Set_results": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "output",
+                "value": "@outputs(\u0027Compose_output\u0027)"
+              },
+              "runAfter": {
+                "Compose_output": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "Initialize_memoryRootPath": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "7757a856-4cf0-4f4d-a258-fef52dc69c2e"
+          }
+        },
+        "Initialize_fileName": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "fileName",
+                "type": "string",
+                "value": "@if(\n    or(\n        empty(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027)),\n        endsWith(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027/\u0027)\n    ),\n    coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027),\n    if(\n        contains(\n            last(split(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027/\u0027)),\n            \u0027.\u0027\n        ),\n        coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027),\n        concat(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027.md\u0027)\n    )\n)"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_output": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "93974f91-3c6e-42ef-8d90-7590bc806e15"
+          }
+        },
+        "Initialize_error": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "error",
+                "type": "object"
+              }
+            ]
+          },
+          "runAfter": {}
+        },
+        "Initialize_output": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "output",
+                "type": "object"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_error": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Catch": {
+          "type": "Scope",
+          "actions": {
+            "Capture_last_result_error": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "error",
+                "value": "@last(result(\u0027Try\u0027))"
+              }
+            },
+            "Extract_last_result_error_info": {
+              "type": "Compose",
+              "inputs": {
+                "status": "error",
+                "message": "Failed while trying to perform action \u0027variables(\u0027error\u0027)?[\u0027name\u0027]\u0027: @{variables(\u0027error\u0027)?[\u0027outputs\u0027]?[\u0027body\u0027]?[\u0027message\u0027]}",
+                "url": "",
+                "path": ""
+              },
+              "runAfter": {
+                "Capture_last_result_error": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Set_results_error": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "output",
+                "value": "@outputs(\u0027Extract_last_result_error_info\u0027)"
+              },
+              "runAfter": {
+                "Extract_last_result_error_info": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "Try": [
+              "Failed",
+              "TIMEDOUT"
+            ]
+          }
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}

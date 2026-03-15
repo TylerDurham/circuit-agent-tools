@@ -1,17 +1,29 @@
-﻿jsonFileName: workflows/AgentTool|SaveMemoryFragment-4fd35888-701e-f111-8341-000d3a19bd5b/workflow.json
+﻿jsonFileName: workflows/AgentTools|SaveMemoryFragment-4fd35888-701e-f111-8341-000d3a19bd5b/workflow.json
 workflowId: 4fd35888-701e-f111-8341-000d3a19bd5b
-name: Agent Tool | Save Memory Fragment
+name: Agent Tools | Save Memory Fragment
 type: 1
 description: >-
   This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business. 
 
+
   # Inputs
 
-  - FileName: The name of the file. If no extension is provided, the extension ".md" will be appended. - Path: The path to where the memory file should be saved. - Content: The content to save, usually the last response of an agent conversation.
+
+  - Name: The name of the file. If no extension is provided, the extension ".md" will be appended.
+
+  - Content: The content to save, usually the last response of an agent conversation.
+
 
   # Outputs
 
-  - URL: The URL to the memory file in the user's OneDrive for Business. - Path: The path to the memory file in the user's OneDrive for Business.
+
+  - Status: A boolean flag that indicates the operation completed successfully or not..
+
+  - URL: The URL to the memory file in the user's OneDrive for Business.
+
+  - A message that explains the results of the operation.
+
+  - Path: The path to the memory file in the user's OneDrive for Business.
 subprocess: false
 category: 5
 mode: 0

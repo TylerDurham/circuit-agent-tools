@@ -22,14 +22,6 @@
         "$connections": {
           "defaultValue": {},
           "type": "Object"
-        },
-        "Memory Fragment Path (circuit_MemoryFragmentPath)": {
-          "defaultValue": "/Agent Tools/Memories",
-          "type": "String",
-          "metadata": {
-            "schemaName": "circuit_MemoryFragmentPath",
-            "description": "The root path to save memory fragment files."
-          }
         }
       },
       "triggers": {
@@ -41,7 +33,7 @@
               "type": "object",
               "properties": {
                 "text": {
-                  "description": "The path to the memory for the agent.",
+                  "description": "Please enter your input",
                   "title": "Path",
                   "type": "string",
                   "x-ms-content-hint": "TEXT",
@@ -103,7 +95,7 @@
           },
           "runAfter": {
             "Get_Memory_Fragment_Folder_Metadata": [
-              "SUCCEEDED"
+              "Succeeded"
             ]
           },
           "metadata": {
@@ -154,6 +146,7 @@
               "inputs": {
                 "filename": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Name\u0027]}",
                 "lastmodified": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027LastModified\u0027]}",
+                "parent": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027DisplayName\u0027]}",
                 "path": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Path\u0027]}",
                 "content": "@{body(\u0027Get_Memory_Fragment_File_Contents\u0027)}"
               },
@@ -184,7 +177,7 @@
               {
                 "name": "memoryFragmentsPath",
                 "type": "string",
-                "value": "@{variables(\u0027MEMORY_ROOT_PATH\u0027)}@{variables(\u0027sanitizedPath\u0027)}"
+                "value": "@variables(\u0027MEMORY_ROOT_PATH\u0027)"
               }
             ]
           },
@@ -208,32 +201,12 @@
             ]
           },
           "runAfter": {
-            "Initialize_and_Sanitize_Path_Param": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "df3863a8-169f-4b13-bf3f-c95adac484b4"
-          }
-        },
-        "Initialize_and_Sanitize_Path_Param": {
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "sanitizedPath",
-                "type": "string",
-                "value": "@if(startsWith(\n  triggerBody()?[\u0027text\u0027], \u0027/\u0027), \n  triggerBody()?[\u0027text\u0027], \n  concat(\u0027/\u0027, triggerBody()?[\u0027text\u0027])\n)"
-              }
-            ]
-          },
-          "runAfter": {
             "Initialize_Memory_Root_Path": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "7ab3bc54-a6f8-40d2-b6d4-9301747eae3f"
+            "operationMetadataId": "df3863a8-169f-4b13-bf3f-c95adac484b4"
           }
         },
         "Initialize_Memory_Root_Path": {
@@ -243,7 +216,7 @@
               {
                 "name": "MEMORY_ROOT_PATH",
                 "type": "string",
-                "value": "@parameters(\u0027Memory Fragment Path (circuit_MemoryFragmentPath)\u0027)"
+                "value": "@triggerBody()?[\u0027text\u0027]"
               }
             ]
           },
@@ -266,7 +239,7 @@
           },
           "runAfter": {
             "Initialize_Memory_Fragments_Path": [
-              "SUCCEEDED"
+              "Succeeded"
             ]
           }
         }

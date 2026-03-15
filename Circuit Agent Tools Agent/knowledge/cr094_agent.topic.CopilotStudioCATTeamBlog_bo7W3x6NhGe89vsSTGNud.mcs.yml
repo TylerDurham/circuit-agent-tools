@@ -1,5 +1,5 @@
 # Name: Copilot Studio CAT Team Blog
-# A curated hub of hands-on technical examples, patterns, and best practices for Microsoft Copilot Studio, authored by the Copilot Studio CAT (Customer Acceleration Team). The site covers real-world scenarios such as agent integrations (Salesforce, ServiceNow, Dataverse), MCP servers vs. connectors, WebChat customization and middleware, authentication strategies, YAML-based agent authoring, test automation, governance, and deployment pipelines. Content is practical, implementation-focused, and geared toward makers and engineers building, extending, and operating production-grade Copilot Studio agents.
+# A curated hub of hands-on technical examples, patterns, and best practices for Microsoft Copilot Studio, authored by the Copilot Studio CAT (Customer Acceleration Team). The site covers real‑world scenarios such as agent integrations (Salesforce, ServiceNow, Dataverse), MCP servers vs. connectors, WebChat customization and middleware, authentication strategies, YAML‑based agent authoring, test automation, governance, and deployment pipelines. Content is practical, implementation‑focused, and geared toward makers and engineers building, extending, and operating production‑grade Copilot Studio agents.
 kind: KnowledgeSourceConfiguration
 source:
   kind: PublicSiteSearchSource

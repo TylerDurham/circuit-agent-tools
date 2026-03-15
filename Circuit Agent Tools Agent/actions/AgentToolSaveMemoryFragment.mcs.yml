@@ -1,28 +1,32 @@
-# Name: Agent Tool - Save Memory Fragment
+# Name: Agent Tool | Save Memory Fragment
 kind: TaskDialog
-response:
-  activity:
-  mode: Generated
+inputs:
+  - kind: ManualTaskInput
+    propertyName: text_2
+    value: =Env.circuit_RootPathToMemories
 
-modelDisplayName: Agent Tool | Save Memory Fragment
 modelDescription: |-
   This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business. 
 
   # Inputs
 
-  - FileName: The name of the file. If no extension is provided, the extension ".md" will be appended.
-  - Path: The path to where the memory file should be saved.
+  - Name: The name of the file. If no extension is provided, the extension ".md" will be appended.
   - Content: The content to save, usually the last response of an agent conversation.
 
   # Outputs
 
+  - Status: A boolean flag that indicates the operation completed successfully or not..
   - URL: The URL to the memory file in the user's OneDrive for Business.
-
+  - A message that explains the results of the operation.
   - Path: The path to the memory file in the user's OneDrive for Business.
 outputs:
   - propertyName: url
 
   - propertyName: path
+
+  - propertyName: status
+
+  - propertyName: message
 
 action:
   kind: InvokeFlowTaskAction

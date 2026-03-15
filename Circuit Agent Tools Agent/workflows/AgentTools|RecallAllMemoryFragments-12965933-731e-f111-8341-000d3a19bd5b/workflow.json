@@ -2,14 +2,13 @@
   "properties": {
     "connectionReferences": {
       "shared_onedriveforbusiness": {
-        "runtimeSource": "invoker",
-        "connection": {
-          "name": "shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf",
-          "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
-        },
         "api": {
           "name": "shared_onedriveforbusiness"
-        }
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
+        },
+        "runtimeSource": "invoker"
       }
     },
     "definition": {
@@ -23,21 +22,10 @@
         "$connections": {
           "defaultValue": {},
           "type": "Object"
-        },
-        "Memory Fragment Path (circuit_MemoryFragmentPath)": {
-          "defaultValue": "/Agent Tools/Memories",
-          "type": "String",
-          "metadata": {
-            "schemaName": "circuit_MemoryFragmentPath",
-            "description": "The root path to save memory fragment files."
-          }
         }
       },
       "triggers": {
         "manual": {
-          "metadata": {
-            "operationMetadataId": "b8f61c18-7224-4f8a-9c5f-72fbce5df764"
-          },
           "type": "Request",
           "kind": "Skills",
           "inputs": {
@@ -45,7 +33,7 @@
               "type": "object",
               "properties": {
                 "text": {
-                  "description": "The path to the memory for the agent.",
+                  "description": "Please enter your input",
                   "title": "Path",
                   "type": "string",
                   "x-ms-content-hint": "TEXT",
@@ -56,19 +44,14 @@
                 "text"
               ]
             }
+          },
+          "metadata": {
+            "operationMetadataId": "b8f61c18-7224-4f8a-9c5f-72fbce5df764"
           }
         }
       },
       "actions": {
         "Respond_to_the_agent": {
-          "runAfter": {
-            "For_Each_Memory_Fragment_Path": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
-          },
           "type": "Response",
           "kind": "Skills",
           "inputs": {
@@ -88,20 +71,17 @@
             "body": {
               "memories": "[@{join(variables(\u0027memory\u0027), \u0027,\u0027)}]"
             }
-          }
-        },
-        "Get_Memory_Fragment_Paths": {
+          },
           "runAfter": {
-            "Get_Memory_Fragment_Folder_Metadata": [
+            "For_Each_Memory_Fragment_Path": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "b!99z2TLbySUSLgi6CtD2_J3I6Oqtl2IlKswmHAOZuTXkH2cIqK1BqTqACqj8R31_G.0134JGRZ4TOMWDUSTD4NF2IQRXUR7QGA4V": "/RFP Research and Response",
-            "b!99z2TLbySUSLgi6CtD2_J3I6Oqtl2IlKswmHAOZuTXkH2cIqK1BqTqACqj8R31_G.0134JGRZ5O6GOSSACDHZE3VI5JSMSCPRHU": "/RFP Research and Response",
-            "operationMetadataId": "fc7ee95f-20ca-471c-bd64-544dbae42e72",
-            "6e202211-2856-4d17-9ded-5beb8b8626b0": "/"
-          },
+            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
+          }
+        },
+        "Get_Memory_Fragment_Paths": {
           "type": "OpenApiConnection",
           "inputs": {
             "parameters": {
@@ -112,15 +92,24 @@
               "operationId": "ListFolderV2",
               "connectionName": "shared_onedriveforbusiness"
             }
+          },
+          "runAfter": {
+            "Get_Memory_Fragment_Folder_Metadata": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "b!99z2TLbySUSLgi6CtD2_J3I6Oqtl2IlKswmHAOZuTXkH2cIqK1BqTqACqj8R31_G.0134JGRZ4TOMWDUSTD4NF2IQRXUR7QGA4V": "/RFP Research and Response",
+            "b!99z2TLbySUSLgi6CtD2_J3I6Oqtl2IlKswmHAOZuTXkH2cIqK1BqTqACqj8R31_G.0134JGRZ5O6GOSSACDHZE3VI5JSMSCPRHU": "/RFP Research and Response",
+            "operationMetadataId": "fc7ee95f-20ca-471c-bd64-544dbae42e72",
+            "6e202211-2856-4d17-9ded-5beb8b8626b0": "/"
           }
         },
         "For_Each_Memory_Fragment_Path": {
+          "type": "Foreach",
           "foreach": "@outputs(\u0027Get_Memory_Fragment_Paths\u0027)?[\u0027body/value\u0027]",
           "actions": {
             "Get_Memory_Fragment_File_Contents": {
-              "metadata": {
-                "operationMetadataId": "16e9717a-1939-4def-96f8-3c4e397661fa"
-              },
               "type": "OpenApiConnection",
               "inputs": {
                 "parameters": {
@@ -132,9 +121,17 @@
                   "operationId": "GetFileContentByPath",
                   "connectionName": "shared_onedriveforbusiness"
                 }
+              },
+              "metadata": {
+                "operationMetadataId": "16e9717a-1939-4def-96f8-3c4e397661fa"
               }
             },
             "Add_Memory_Fragment_Record_to_Memory_Table": {
+              "type": "AppendToArrayVariable",
+              "inputs": {
+                "name": "memory",
+                "value": "@outputs(\u0027Create_Memory_Fragment_Record\u0027)"
+              },
               "runAfter": {
                 "Create_Memory_Fragment_Record": [
                   "Succeeded"
@@ -142,14 +139,17 @@
               },
               "metadata": {
                 "operationMetadataId": "1eb79577-6dd4-4f4b-9846-82efd0d18ebb"
-              },
-              "type": "AppendToArrayVariable",
-              "inputs": {
-                "name": "memory",
-                "value": "@outputs(\u0027Create_Memory_Fragment_Record\u0027)"
               }
             },
             "Create_Memory_Fragment_Record": {
+              "type": "Compose",
+              "inputs": {
+                "filename": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Name\u0027]}",
+                "lastmodified": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027LastModified\u0027]}",
+                "parent": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027DisplayName\u0027]}",
+                "path": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Path\u0027]}",
+                "content": "@{body(\u0027Get_Memory_Fragment_File_Contents\u0027)}"
+              },
               "runAfter": {
                 "Get_Memory_Fragment_File_Contents": [
                   "Succeeded"
@@ -157,13 +157,6 @@
               },
               "metadata": {
                 "operationMetadataId": "caa01bcc-cd4b-43dd-bbb5-2d2ae9f98a07"
-              },
-              "type": "Compose",
-              "inputs": {
-                "filename": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Name\u0027]}",
-                "lastmodified": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027LastModified\u0027]}",
-                "path": "@{items(\u0027For_Each_Memory_Fragment_Path\u0027)?[\u0027Path\u0027]}",
-                "content": "@{body(\u0027Get_Memory_Fragment_File_Contents\u0027)}"
               }
             }
           },
@@ -174,10 +167,20 @@
           },
           "metadata": {
             "operationMetadataId": "db04bfef-b3bb-49ea-8823-d40751f36440"
-          },
-          "type": "Foreach"
+          }
         },
         "Initialize_Memory_Fragments_Path": {
+          "type": "InitializeVariable",
+          "description": "Combine ROOT with incoming Path parameter.",
+          "inputs": {
+            "variables": [
+              {
+                "name": "memoryFragmentsPath",
+                "type": "string",
+                "value": "@variables(\u0027MEMORY_ROOT_PATH\u0027)"
+              }
+            ]
+          },
           "runAfter": {
             "Initialize_Memory_Fragment_Table": [
               "Succeeded"
@@ -185,28 +188,9 @@
           },
           "metadata": {
             "operationMetadataId": "9be18ba1-d11d-41ad-b26a-faea4bf7e5d1"
-          },
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "memoryFragmentsPath",
-                "type": "string",
-                "value": "@{variables(\u0027MEMORY_ROOT_PATH\u0027)}@{variables(\u0027sanitizedPath\u0027)}"
-              }
-            ]
-          },
-          "description": "Combine ROOT with incoming Path parameter."
+          }
         },
         "Initialize_Memory_Fragment_Table": {
-          "runAfter": {
-            "Initialize_and_Sanitize_Path_Param": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "df3863a8-169f-4b13-bf3f-c95adac484b4"
-          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -215,50 +199,33 @@
                 "type": "array"
               }
             ]
-          }
-        },
-        "Initialize_and_Sanitize_Path_Param": {
+          },
           "runAfter": {
             "Initialize_Memory_Root_Path": [
               "Succeeded"
             ]
           },
           "metadata": {
-            "operationMetadataId": "7ab3bc54-a6f8-40d2-b6d4-9301747eae3f"
-          },
-          "type": "InitializeVariable",
-          "inputs": {
-            "variables": [
-              {
-                "name": "sanitizedPath",
-                "type": "string",
-                "value": "@if(startsWith(\n  triggerBody()?[\u0027text\u0027], \u0027/\u0027), \n  triggerBody()?[\u0027text\u0027], \n  concat(\u0027/\u0027, triggerBody()?[\u0027text\u0027])\n)"
-              }
-            ]
+            "operationMetadataId": "df3863a8-169f-4b13-bf3f-c95adac484b4"
           }
         },
         "Initialize_Memory_Root_Path": {
-          "runAfter": {},
-          "metadata": {
-            "operationMetadataId": "d27700d9-b09c-4fd6-9d4f-cba6af93b0be"
-          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
               {
                 "name": "MEMORY_ROOT_PATH",
                 "type": "string",
-                "value": "@parameters(\u0027Memory Fragment Path (circuit_MemoryFragmentPath)\u0027)"
+                "value": "@triggerBody()?[\u0027text\u0027]"
               }
             ]
+          },
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "d27700d9-b09c-4fd6-9d4f-cba6af93b0be"
           }
         },
         "Get_Memory_Fragment_Folder_Metadata": {
-          "runAfter": {
-            "Initialize_Memory_Fragments_Path": [
-              "Succeeded"
-            ]
-          },
           "type": "OpenApiConnection",
           "inputs": {
             "parameters": {
@@ -269,6 +236,11 @@
               "operationId": "GetFileMetadataByPath",
               "connectionName": "shared_onedriveforbusiness"
             }
+          },
+          "runAfter": {
+            "Initialize_Memory_Fragments_Path": [
+              "Succeeded"
+            ]
           }
         }
       },
