@@ -84,16 +84,16 @@ This is a simple tool that allows the agent to save a bit of content (called a "
 
 # Inputs
 
-- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memory).
 - Name: The name of the memory file. If no extension is provided, the extension ".md" will be appended.
 - Content: The content to save, usually the last response of an agent conversation.
 
 # Outputs
 
-- Status: A boolean flag that indicates the operation completed successfully or not..
-- URL: The URL to the memory file in the user's OneDrive for Business.
+- Status: A boolean flag that indicates the operation completed successfully or not.
 - A message that explains the results of the operation.
-- Path: The path to the memory file in the user's OneDrive for Business.
+- URL: The URL to the memory file in the user's OneDrive for Business.
+- Path: The path that was used in the Path input parameter.
 ```
 
 ### Agent Tools - Recall All Memory Fragments
@@ -101,11 +101,11 @@ This is a simple tool that allows the agent to save a bit of content (called a "
 Description:
 
 ```text
-This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business.
+This is a simple tool that allows the agent to retrieve content (called "memory" or "memory fragments") from a location in OneDrive for Business.
 
 # Inputs
 
-- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memory).
 
 # Outputs
 
@@ -121,7 +121,7 @@ This is a simple tool that allows the agent to clear all content (called a "memo
 
 # Inputs
 
-- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memory).
 
 # Outputs
 

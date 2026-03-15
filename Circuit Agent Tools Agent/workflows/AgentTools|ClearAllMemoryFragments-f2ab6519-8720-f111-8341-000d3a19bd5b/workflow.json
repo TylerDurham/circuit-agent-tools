@@ -1,0 +1,309 @@
+﻿{
+  "properties": {
+    "connectionReferences": {
+      "shared_onedriveforbusiness": {
+        "api": {
+          "name": "shared_onedriveforbusiness"
+        },
+        "connection": {
+          "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
+        },
+        "runtimeSource": "invoker"
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$authentication": {
+          "defaultValue": {},
+          "type": "SecureObject"
+        },
+        "$connections": {
+          "defaultValue": {},
+          "type": "Object"
+        }
+      },
+      "triggers": {
+        "manual": {
+          "type": "Request",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "description": "Please enter your input",
+                  "title": "Path",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "required": [
+                "text"
+              ]
+            }
+          },
+          "metadata": {
+            "operationMetadataId": "b8f61c18-7224-4f8a-9c5f-72fbce5df764"
+          }
+        }
+      },
+      "actions": {
+        "Respond_to_the_agent": {
+          "type": "Response",
+          "kind": "Skills",
+          "inputs": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "title": "Status",
+                  "description": "",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "message": {
+                  "title": "Message",
+                  "description": "",
+                  "type": "string",
+                  "x-ms-content-hint": "TEXT",
+                  "x-ms-dynamically-added": true
+                },
+                "count": {
+                  "title": "Count",
+                  "description": "The total number of memory fragments deleted.",
+                  "type": "number",
+                  "x-ms-content-hint": "NUMBER",
+                  "x-ms-dynamically-added": true
+                }
+              },
+              "additionalProperties": {}
+            },
+            "statusCode": 200,
+            "body": {
+              "status": "@{variables(\u0027results\u0027)?[\u0027status\u0027]}",
+              "message": "@{variables(\u0027results\u0027)?[\u0027message\u0027]}",
+              "count": "@variables(\u0027results\u0027)?[\u0027count\u0027]"
+            }
+          },
+          "runAfter": {
+            "Catch": [
+              "Succeeded",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
+          }
+        },
+        "Initialize_results": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "results",
+                "type": "object"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_error": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Initialize_memoryRootPath": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "memoryRootPath",
+                "type": "string",
+                "value": "@triggerBody()?[\u0027text\u0027]"
+              }
+            ]
+          },
+          "runAfter": {
+            "Initialize_results": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "43a8f445-a4ae-49af-9182-5374b87f7335"
+          }
+        },
+        "Try": {
+          "type": "Scope",
+          "actions": {
+            "List_files_in_folder": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "id": "@outputs(\u0027Get_file_metadata_using_path\u0027)?[\u0027body/Id\u0027]"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+                  "operationId": "ListFolderV2",
+                  "connectionName": "shared_onedriveforbusiness"
+                }
+              },
+              "runAfter": {
+                "Get_file_metadata_using_path": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Get_file_metadata_using_path": {
+              "type": "OpenApiConnection",
+              "inputs": {
+                "parameters": {
+                  "path": "@variables(\u0027memoryRootPath\u0027)"
+                },
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+                  "operationId": "GetFileMetadataByPath",
+                  "connectionName": "shared_onedriveforbusiness"
+                }
+              }
+            },
+            "Set_successful_results": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "results",
+                "value": "@outputs(\u0027Compose_successful_results\u0027)"
+              },
+              "runAfter": {
+                "Compose_successful_results": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Compose_successful_results": {
+              "type": "Compose",
+              "inputs": {
+                "status": "succcess",
+                "message": "@{length(outputs(\u0027List_files_in_folder\u0027)?[\u0027body/value\u0027])} memories cleared from \u0027@{variables(\u0027memoryRootPath\u0027)}\u0027.",
+                "count": "@length(outputs(\u0027List_files_in_folder\u0027)?[\u0027body/value\u0027])"
+              },
+              "runAfter": {
+                "For_each": [
+                  "SUCCEEDED"
+                ]
+              }
+            },
+            "For_each": {
+              "type": "foreach",
+              "foreach": "@outputs(\u0027List_files_in_folder\u0027)?[\u0027body/value\u0027]",
+              "actions": {
+                "Delete_file": {
+                  "type": "OpenApiConnection",
+                  "inputs": {
+                    "parameters": {
+                      "id": "@items(\u0027For_each\u0027)?[\u0027Id\u0027]"
+                    },
+                    "host": {
+                      "apiId": "/providers/Microsoft.PowerApps/apis/shared_onedriveforbusiness",
+                      "operationId": "DeleteFile",
+                      "connectionName": "shared_onedriveforbusiness"
+                    }
+                  }
+                }
+              },
+              "runAfter": {
+                "List_files_in_folder": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "Initialize_memoryRootPath": [
+              "Succeeded"
+            ]
+          }
+        },
+        "Catch": {
+          "type": "Scope",
+          "actions": {
+            "Catch_get_last_error": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "error",
+                "value": "@last(outputs(\u0027Catch_filter_error_array\u0027)?[\u0027body\u0027])"
+              },
+              "runAfter": {
+                "Catch_filter_error_array": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Catch_compose_error_results": {
+              "type": "Compose",
+              "inputs": {
+                "status": "error",
+                "message": "Failed while trying to perform action \u0027@{variables(\u0027error\u0027)?[\u0027outputs\u0027]?[\u0027body\u0027]?[\u0027message\u0027]}\u0027: @{variables(\u0027error\u0027)?[\u0027outputs\u0027]?[\u0027body\u0027]?[\u0027message\u0027]}",
+                "path": "@{variables(\u0027memoryRootPath\u0027)}"
+              },
+              "runAfter": {
+                "Compose": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Catch_set_error_results": {
+              "type": "SetVariable",
+              "inputs": {
+                "name": "results",
+                "value": "@outputs(\u0027Catch_compose_error_results\u0027)"
+              },
+              "runAfter": {
+                "Catch_compose_error_results": [
+                  "Succeeded"
+                ]
+              }
+            },
+            "Catch_filter_error_array": {
+              "type": "Query",
+              "inputs": {
+                "from": "@result(\u0027Try\u0027)",
+                "where": "@or(equals(item()?[\u0027status\u0027], \u0027Failed\u0027), equals(item()?[\u0027status\u0027], \u0027TimedOut\u0027))"
+              }
+            },
+            "Compose": {
+              "type": "Compose",
+              "inputs": "@variables(\u0027error\u0027)",
+              "runAfter": {
+                "Catch_get_last_error": [
+                  "Succeeded"
+                ]
+              }
+            }
+          },
+          "runAfter": {
+            "Try": [
+              "Failed",
+              "TimedOut"
+            ]
+          }
+        },
+        "Initialize_error": {
+          "type": "InitializeVariable",
+          "inputs": {
+            "variables": [
+              {
+                "name": "error",
+                "type": "object"
+              }
+            ]
+          },
+          "runAfter": {}
+        }
+      },
+      "outputs": {}
+    }
+  },
+  "schemaVersion": "1.0.0.0"
+}

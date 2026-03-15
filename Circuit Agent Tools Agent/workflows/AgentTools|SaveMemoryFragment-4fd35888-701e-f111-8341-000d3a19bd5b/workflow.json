@@ -2,13 +2,14 @@
   "properties": {
     "connectionReferences": {
       "shared_onedriveforbusiness": {
-        "api": {
-          "name": "shared_onedriveforbusiness"
-        },
+        "runtimeSource": "invoker",
         "connection": {
+          "name": "shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf",
           "connectionReferenceLogicalName": "cr094_procurementAgent.shared_onedriveforbusiness.shared-onedriveforbu-d7a6c613-54b3-4683-a79c-dc48c74cbfaf"
         },
-        "runtimeSource": "invoker"
+        "api": {
+          "name": "shared_onedriveforbusiness"
+        }
       }
     },
     "definition": {
@@ -26,6 +27,9 @@
       },
       "triggers": {
         "manual": {
+          "metadata": {
+            "operationMetadataId": "641ac52a-27a0-4d1e-b4f1-595ca26c50d6"
+          },
           "type": "Request",
           "kind": "Skills",
           "inputs": {
@@ -60,14 +64,20 @@
                 "text_2"
               ]
             }
-          },
-          "metadata": {
-            "operationMetadataId": "641ac52a-27a0-4d1e-b4f1-595ca26c50d6"
           }
         }
       },
       "actions": {
         "Respond_to_the_agent": {
+          "runAfter": {
+            "Catch": [
+              "Succeeded",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
+          },
           "type": "Response",
           "kind": "Skills",
           "inputs": {
@@ -107,18 +117,17 @@
               "path": "@{variables(\u0027output\u0027)?[\u0027path\u0027]}",
               "message": "@{variables(\u0027output\u0027)?[\u0027message\u0027]}"
             }
-          },
-          "runAfter": {
-            "Catch": [
-              "Succeeded",
-              "Skipped"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "81c94f73-dd52-465c-ad3b-a4686da63cc3"
           }
         },
         "Initialize_memoryRootPath": {
+          "runAfter": {
+            "Initialize_fileName": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "43a8f445-a4ae-49af-9182-5374b87f7335"
+          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -128,20 +137,14 @@
                 "value": "@triggerBody()?[\u0027text_2\u0027]"
               }
             ]
-          },
-          "runAfter": {
-            "Initialize_fileName": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "43a8f445-a4ae-49af-9182-5374b87f7335"
           }
         },
         "Try": {
-          "type": "Scope",
           "actions": {
             "Create_file": {
+              "metadata": {
+                "operationMetadataId": "da752d30-ce43-4711-9d30-86a2275a1825"
+              },
               "type": "OpenApiConnection",
               "inputs": {
                 "parameters": {
@@ -159,12 +162,17 @@
                 "contentTransfer": {
                   "transferMode": "Chunked"
                 }
-              },
-              "metadata": {
-                "operationMetadataId": "da752d30-ce43-4711-9d30-86a2275a1825"
               }
             },
             "Create_share_link_by_path": {
+              "runAfter": {
+                "Create_file": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "79a95406-df2b-4017-8d2e-712599f2dd2d"
+              },
               "type": "OpenApiConnection",
               "inputs": {
                 "parameters": {
@@ -177,40 +185,32 @@
                   "operationId": "CreateShareLinkByPathV2",
                   "connectionName": "shared_onedriveforbusiness"
                 }
-              },
-              "runAfter": {
-                "Create_file": [
-                  "Succeeded"
-                ]
-              },
-              "metadata": {
-                "operationMetadataId": "79a95406-df2b-4017-8d2e-712599f2dd2d"
               }
             },
             "Compose_output": {
+              "runAfter": {
+                "Create_share_link_by_path": [
+                  "Succeeded"
+                ]
+              },
               "type": "Compose",
               "inputs": {
                 "url": "@{outputs(\u0027Create_share_link_by_path\u0027)?[\u0027body/WebUrl\u0027]}",
                 "path": "@{outputs(\u0027Create_file\u0027)?[\u0027body/Path\u0027]}",
                 "status": "success",
                 "message": "The memory fragment \u0027@{outputs(\u0027Create_file\u0027)?[\u0027body/DisplayName\u0027]}\u0027 has been successfully created at \u0027@{outputs(\u0027Create_file\u0027)?[\u0027body/Path\u0027]}\u0027. Enjoy!"
-              },
-              "runAfter": {
-                "Create_share_link_by_path": [
-                  "Succeeded"
-                ]
               }
             },
             "Set_results": {
-              "type": "SetVariable",
-              "inputs": {
-                "name": "output",
-                "value": "@outputs(\u0027Compose_output\u0027)"
-              },
               "runAfter": {
                 "Compose_output": [
                   "Succeeded"
                 ]
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "output",
+                "value": "@outputs(\u0027Compose_output\u0027)"
               }
             }
           },
@@ -221,9 +221,18 @@
           },
           "metadata": {
             "operationMetadataId": "7757a856-4cf0-4f4d-a258-fef52dc69c2e"
-          }
+          },
+          "type": "Scope"
         },
         "Initialize_fileName": {
+          "runAfter": {
+            "Initialize_output": [
+              "Succeeded"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "93974f91-3c6e-42ef-8d90-7590bc806e15"
+          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -233,17 +242,10 @@
                 "value": "@if(\n    or(\n        empty(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027)),\n        endsWith(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027/\u0027)\n    ),\n    coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027),\n    if(\n        contains(\n            last(split(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027/\u0027)),\n            \u0027.\u0027\n        ),\n        coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027),\n        concat(coalesce(triggerBody()?[\u0027text\u0027], \u0027\u0027), \u0027.md\u0027)\n    )\n)"
               }
             ]
-          },
-          "runAfter": {
-            "Initialize_output": [
-              "Succeeded"
-            ]
-          },
-          "metadata": {
-            "operationMetadataId": "93974f91-3c6e-42ef-8d90-7590bc806e15"
           }
         },
         "Initialize_error": {
+          "runAfter": {},
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -252,10 +254,14 @@
                 "type": "object"
               }
             ]
-          },
-          "runAfter": {}
+          }
         },
         "Initialize_output": {
+          "runAfter": {
+            "Initialize_error": [
+              "Succeeded"
+            ]
+          },
           "type": "InitializeVariable",
           "inputs": {
             "variables": [
@@ -264,15 +270,9 @@
                 "type": "object"
               }
             ]
-          },
-          "runAfter": {
-            "Initialize_error": [
-              "Succeeded"
-            ]
           }
         },
         "Catch": {
-          "type": "Scope",
           "actions": {
             "Capture_last_result_error": {
               "type": "SetVariable",
@@ -282,38 +282,39 @@
               }
             },
             "Extract_last_result_error_info": {
+              "runAfter": {
+                "Capture_last_result_error": [
+                  "Succeeded"
+                ]
+              },
               "type": "Compose",
               "inputs": {
                 "status": "error",
                 "message": "Failed while trying to perform action \u0027variables(\u0027error\u0027)?[\u0027name\u0027]\u0027: @{variables(\u0027error\u0027)?[\u0027outputs\u0027]?[\u0027body\u0027]?[\u0027message\u0027]}",
                 "url": "",
                 "path": ""
-              },
-              "runAfter": {
-                "Capture_last_result_error": [
-                  "Succeeded"
-                ]
               }
             },
             "Set_results_error": {
-              "type": "SetVariable",
-              "inputs": {
-                "name": "output",
-                "value": "@outputs(\u0027Extract_last_result_error_info\u0027)"
-              },
               "runAfter": {
                 "Extract_last_result_error_info": [
                   "Succeeded"
                 ]
+              },
+              "type": "SetVariable",
+              "inputs": {
+                "name": "output",
+                "value": "@outputs(\u0027Extract_last_result_error_info\u0027)"
               }
             }
           },
           "runAfter": {
             "Try": [
               "Failed",
-              "TIMEDOUT"
+              "TimedOut"
             ]
-          }
+          },
+          "type": "Scope"
         }
       },
       "outputs": {}

@@ -1,0 +1,47 @@
+﻿jsonFileName: workflows/AgentTools|ClearAllMemoryFragments-f2ab6519-8720-f111-8341-000d3a19bd5b/workflow.json
+workflowId: f2ab6519-8720-f111-8341-000d3a19bd5b
+name: Agent Tools | Clear All Memory Fragments
+type: 1
+description: >-
+  This is a simple tool that allows the agent to clear all content (called a "memory") from a location in OneDrive for Business. 
+
+
+  # Inputs
+
+
+  - Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
+
+
+  # Outputs
+
+
+  - Status: A boolean flag that indicates the operation completed successfully or not (example: success, ok or failed, failure, error)
+
+  - A message that explains the results of the operation.
+
+  - Path: The path that was used in the Path input parameter.
+subprocess: false
+category: 5
+mode: 0
+scope: 4
+onDemand: false
+triggerOnCreate: false
+triggerOnDelete: false
+asyncAutodelete: false
+syncWorkflowLogOnFailure: false
+stateCode: 1
+statusCode: 2
+runAs: 1
+isTransacted: true
+introducedVersion: 1.0.0.0
+isCustomizable:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: iscustomizableanddeletable
+businessProcessType: 0
+isCustomProcessingStepAllowedForOtherPublishers:
+  value: true
+  canBeChanged: true
+  managedPropertyLogicalName: canbedeleted
+modernFlowType: 1
+primaryEntity: none

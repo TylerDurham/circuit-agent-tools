@@ -9,7 +9,9 @@ description: >-
   # Inputs
 
 
-  - Name: The name of the file. If no extension is provided, the extension ".md" will be appended.
+  - Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memory).
+
+  - Name: The name of the memory file. If no extension is provided, the extension ".md" will be appended.
 
   - Content: The content to save, usually the last response of an agent conversation.
 
@@ -17,13 +19,13 @@ description: >-
   # Outputs
 
 
-  - Status: A boolean flag that indicates the operation completed successfully or not..
-
-  - URL: The URL to the memory file in the user's OneDrive for Business.
+  - Status: A boolean flag that indicates the operation completed successfully or not.
 
   - A message that explains the results of the operation.
 
-  - Path: The path to the memory file in the user's OneDrive for Business.
+  - URL: The URL to the memory file in the user's OneDrive for Business.
+
+  - Path: The path that was used in the Path input parameter.
 subprocess: false
 category: 5
 mode: 0

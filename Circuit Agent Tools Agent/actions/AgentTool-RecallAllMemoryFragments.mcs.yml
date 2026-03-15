@@ -11,8 +11,11 @@ inputs:
 
 modelDisplayName: Agent Tool | Recall All Memory Fragments
 modelDescription: |-
-  This is a simple tool that allows the agent to retrieve content (called a "memories") from a location in OneDrive for Business. 
+  This is a simple tool that allows the agent to retrieve content (called "memory" or "memory fragments") from a location in OneDrive for Business.
 
+  # Inputs
+
+  - Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memory).
 
   # Outputs
 
