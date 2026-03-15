@@ -77,6 +77,25 @@ A curated hub of hands-on technical examples, patterns, and best practices for M
 
 While the agent flows deploy to the target environment just fine, many times the flows are not bound to the agent. You must go back and add them again. Ensure you use proper descriptions for the tools; the ones I use are below for you reference.
 
+### Agent Tools - Save Memory Fragment
+
+``` text
+This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business. 
+
+# Inputs
+
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
+- Name: The name of the memory file. If no extension is provided, the extension ".md" will be appended.
+- Content: The content to save, usually the last response of an agent conversation.
+
+# Outputs
+
+- Status: A boolean flag that indicates the operation completed successfully or not..
+- URL: The URL to the memory file in the user's OneDrive for Business.
+- A message that explains the results of the operation.
+- Path: The path to the memory file in the user's OneDrive for Business.
+```
+
 ### Agent Tools - Recall All Memory Fragments
 
 Description:
@@ -86,30 +105,28 @@ This is a simple tool that allows the agent to retrieve content (called a "memor
 
 # Inputs
 
-- Path: The path to where the memory files were saved.
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
 
 # Outputs
 
 - Memories: A JSON formatted string containing an array of all memories located in the specifed Path.
 ```
 
-### Agent Tools
+### Agent Tools - Clear All Memory Fragments
 
 Description:
 
 ```text
-This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business.
+This is a simple tool that allows the agent to clear all content (called a "memory") from a location in OneDrive for Business. 
 
 # Inputs
 
-- FileName: The name of the file. If no extension is provided, the extension ".md" will be appended.
-- Path: The path to where the memory file should be saved.
-- Content: The content to save, usually the last response of an agent conversation.
+- Path: The path to where the memories will be stored. It should be a root relative path (exampe: /Agent Tools/Memories).
 
 # Outputs
 
-- URL: The URL to the memory file in the user's OneDrive for Business.
-
-- Path: The path to the memory file in the user's OneDrive for Business.
+- Status: A boolean flag that indicates the operation completed successfully or not (example: success, ok or failed, failure, error)
+- A message that explains the results of the operation.
+- Path: The path that was used in the Path input parameter.
 ```
 
