@@ -1,4 +1,4 @@
-# Name: Agent Tool | Open URL
+# Name: Agent Tools | Open URL
 # Displays a simple message that opens a URL for the user.
 kind: AdaptiveDialog
 inputs:

@@ -1,2 +1,3 @@
 ﻿componentCollections:
-  - schemaName: bot_componentcollection_circuit_agent_tools
+  - schemaName:
+    directory: ../Circuit Agent Tools Components/

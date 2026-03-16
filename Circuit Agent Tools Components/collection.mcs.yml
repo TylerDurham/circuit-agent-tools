@@ -1,0 +1,5 @@
+﻿schemaName: bot_componentcollection_circuit_agent_tools
+displayName: Circuit Agent Tools Components
+description: A collection of common agent components.
+configuration:
+  primaryLanguage: 1033
