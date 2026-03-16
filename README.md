@@ -43,13 +43,13 @@ https://www.microsoft.com/en-us/microsoft-copilot
 
 Name:
 
-```name
+``` markdown
 Official Microsoft Copilot Studio Site
 ```
 
 Description:
 
-```description
+``` markdown
 The official Microsoft landing site for Copilot across organizations and personal use, providing an overview of Copilot capabilities, product options, licensing, privacy and security commitments, and common usage scenarios. It helps users understand what Copilots are, how different Copilot offerings compare, how Copilot integrates with Microsoft 365 apps (Word, Excel, PowerPoint, Teams), and where to find documentation, tutorials, and next steps. Designed as a discovery and onboarding resource rather than an implementation guide.
 ```
 
@@ -69,7 +69,7 @@ Copilot Studio CAT Team Blog
 
 Description:
 
-```description
+``` markdown
 A curated hub of hands-on technical examples, patterns, and best practices for Microsoft Copilot Studio, authored by the Copilot Studio CAT (Customer Acceleration Team). The site covers real‑world scenarios such as agent integrations (Salesforce, ServiceNow, Dataverse), MCP servers vs. connectors, WebChat customization and middleware, authentication strategies, YAML‑based agent authoring, test automation, governance, and deployment pipelines. Content is practical, implementation‑focused, and geared toward makers and engineers building, extending, and operating production‑grade Copilot Studio agents.
 ```
 
@@ -79,7 +79,7 @@ While the agent flows deploy to the target environment just fine, many times the
 
 ### Agent Tools - Save Memory Fragment
 
-``` text
+``` markdown
 This is a simple tool that allows the agent to save a bit of content (called a "memory") to a location in OneDrive for Business. 
 
 # Inputs
@@ -100,7 +100,7 @@ This is a simple tool that allows the agent to save a bit of content (called a "
 
 Description:
 
-```text
+``` markdown
 This is a simple tool that allows the agent to retrieve content (called "memory" or "memory fragments") from a location in OneDrive for Business.
 
 # Inputs
@@ -116,7 +116,7 @@ This is a simple tool that allows the agent to retrieve content (called "memory"
 
 Description:
 
-```text
+``` markdown
 This is a simple tool that allows the agent to clear all content (called a "memory") from a location in OneDrive for Business. 
 
 # Inputs
@@ -130,3 +130,37 @@ This is a simple tool that allows the agent to clear all content (called a "memo
 - Path: The path that was used in the Path input parameter.
 ```
 
+# Prompts & Instructions
+
+## Agent Instructions
+
+``` markdown
+# OVERVIEW
+
+You are a cool Copilot Studio agent that will be used to showcase different tools and capabilities with your orchestration - it's your time to shine!
+
+- Use a friendly and confident (but not cocky) tone.
+- If a user asks what can you do, help, or capabilities, list your skills with some sample prompts to assist the user in having a conversation with you. Do NOT list any skills that are not specifically mentioned below in the # SKILLS section!
+
+# SKILLS
+
+## SAVE MEMORY FRAGMENT
+
+If a user asks, use Agent Tool | Save Memory Fragment to save a memory. This means they liked your last response! 
+
+Tool Inputs:
+
+- Please also generate a filename and pass to the Name property. 
+- Be sure to input your entire last response (including citations) to the Contents property of the tool. 
+
+Tool Outputs:
+
+The tool will return a URL to the new memory fragment. If the URL is empty OR the Status is not equal to true, show the value in the Message.
+
+You must use the Agent Tool | Open URL  tool to allow the user to open the url after the memory is saved.
+
+
+## RECALL ALL MEMORY FRAGMENTS
+
+If a user asks, use the Agent Tool | Recall All Memory Fragments to recall memories. Be helpful! Sort them descending, and output them in a table with the metadata in the frontmatter.
+```
